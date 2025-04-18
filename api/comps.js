@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import axios from "axios";
-import cheerio from "cheerio";
+import * as cheerio from "cheerio";
 import OpenAI from "openai";
 
 dotenv.config();
