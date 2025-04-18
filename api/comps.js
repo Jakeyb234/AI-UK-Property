@@ -1,85 +1,51 @@
 import express from "express";
 import bodyParser from "body-parser";
-import dotenv from "dotenv";
-import axios from "axios";
-import * as cheerio from "cheerio";
-import OpenAI from "openai";
 
-dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 10000;
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
+// Middleware
 app.use(bodyParser.json());
 
-// Mock scraping function for Rightmove and Zoopla (replace with real logic later)
-async function getCompsData(postcode) {
-  // 🔧 Simulated results
-  return [
-    {
-      address: "12 Main St, " + postcode,
-      price: 320000,
-      bedrooms: 3,
-      type: "Semi-detached",
-    },
-    {
-      address: "17 Oak Rd, " + postcode,
-      price: 340000,
-      bedrooms: 3,
-      type: "Detached",
-    },
-    {
-      address: "45 Park View, " + postcode,
-      price: 310000,
-      bedrooms: 3,
-      type: "Terraced",
-    },
-  ];
-}
-
-app.post("/api/comps", async (req, res) => {
+// Test POST route
+app.post("/api/comps", (req, res) => {
   const { postcode } = req.body;
 
   if (!postcode) {
-    return res.status(400).json({ error: "Postcode is required." });
+    return res.status(400).json({ error: "Postcode is required" });
   }
 
-  try {
-    const comps = await getCompsData(postcode);
+  // Simulate response (you can replace this with OpenAI or scraping later)
+  const comps = [
+    {
+      address: `10 Example Road, ${postcode}`,
+      price: 350000,
+      type: "Flat",
+      bedrooms: 2,
+    },
+    {
+      address: `12 Sample Street, ${postcode}`,
+      price: 370000,
+      type: "Terraced",
+      bedrooms: 3,
+    },
+  ];
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful property analyst for the UK housing market.",
-        },
-        {
-          role: "user",
-          content: `Here are 3 comparable properties in ${postcode}:\n${JSON.stringify(
-            comps,
-            null,
-            2
-          )}\nGive a brief analysis of the local market based on these.`,
-        },
-      ],
-    });
-
-    const summary = response.choices[0].message.content;
-
-    res.json({ comps, summary });
-  } catch (error) {
-    console.error("Error in /api/comps:", error);
-    res.status(500).json({ error: "Something went wrong." });
-  }
+  res.status(200).json({
+    comps,
+    summary: `Found ${comps.length} comparable properties in ${postcode}`,
+  });
 });
 
+// Default GET route
 app.get("/", (req, res) => {
   res.send("AI Property Comps Backend is running 🏡");
 });
+
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
