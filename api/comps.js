@@ -1,39 +1,37 @@
-import express from "express";
-import bodyParser from "body-parser";
+import express from 'express';
+import axios from 'axios';
+import cheerio from 'cheerio';
 
 const app = express();
-// Use the port provided by Render or default to 10000
-const port = process.env.PORT || 10000;
+const PORT = process.env.PORT || 10000;
 
-// Middleware to parse JSON bodies
-app.use(bodyParser.json());
+// Middleware to parse JSON requests
+app.use(express.json());
 
-// POST endpoint to return mock comps data
-app.post("/api/comps", (req, res) => {
-  const { postcode } = req.body;
-  if (!postcode) {
-    return res.status(400).json({ error: "Postcode is required" });
+// Define the POST route to fetch property comps
+app.post('/api/comps', async (req, res) => {
+  try {
+    const { location, propertyType, priceRange } = req.body;
+
+    if (!location || !propertyType || !priceRange) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    // Your logic to fetch property data goes here
+    const propertyData = await fetchPropertyData(location, propertyType, priceRange);
+
+    res.status(200).json(propertyData); // Return the fetched property data
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while fetching property data' });
   }
-
-  // Mock comparable properties
-  const comps = [
-    { address: `10 Example Road, ${postcode}`, price: 350000, type: "Flat", bedrooms: 2 },
-    { address: `12 Sample Street, ${postcode}`, price: 370000, type: "Terraced", bedrooms: 3 }
-  ];
-
-  // Response
-  res.json({
-    comps,
-    summary: `Found ${comps.length} comparable properties in ${postcode}`
-  });
 });
 
-// Health check endpoint
-app.get("/", (req, res) => {
-  res.send("AI Property Comps Backend is running 🏡");
-});
+// Fetch property data from external API or scraping
+async function fetchPropertyData(location, propertyType, priceRange) {
+  // Example fetching data logic
+  const response = await axios.get(`https://
 
-// Start the server
-app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
