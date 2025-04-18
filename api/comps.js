@@ -15,7 +15,7 @@ app.post("/api/comps", (req, res) => {
     return res.status(400).json({ error: "Postcode is required" });
   }
 
-  // Simulate response (you can replace this with OpenAI or scraping later)
+  // Simulate response (replace with real logic later)
   const comps = [
     {
       address: `10 Example Road, ${postcode}`,
@@ -42,12 +42,11 @@ app.get("/", (req, res) => {
   res.send("AI Property Comps Backend is running 🏡");
 });
 
+// Start server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
-
-const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
 
   console.log(`Server running on port ${PORT}`);
